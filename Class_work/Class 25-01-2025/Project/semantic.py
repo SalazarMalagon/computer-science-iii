@@ -1,5 +1,5 @@
 import tkinter as tk
-from lexical import lex
+from lexical import LexicalAnalyzer
 from sintactic import Parser
 
 class SemanticAnalyzer:
@@ -49,7 +49,7 @@ C4 4 D4 4 E4 4 F4 4 G4 4 A4 4 B4 4 C4 4
 END
 """
 
-tokens = lex(input_text)
+tokens = LexicalAnalyzer.lex(input_text)
 parser = Parser(tokens)
 parser.parse()
 semantic_analyzer = SemanticAnalyzer(tokens)

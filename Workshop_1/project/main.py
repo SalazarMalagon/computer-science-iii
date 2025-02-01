@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
 ENTITY libro :
     codigo: PK, NON_NULL, INT, AUT, NULL
-    autor: NON_PK, NON_NULL, CHAR, NON_AUT
+    autor: NON_PK, NON_NULL, CoAR, NON_AUT
 
 """
     new_code = lexical_analysis(code)
