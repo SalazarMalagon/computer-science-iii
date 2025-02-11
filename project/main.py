@@ -9,7 +9,6 @@ ENTITY libro :
     codigo: PK, NON_NULL, INT, AUT;
     autor: NON_PK, NON_NULL, CHAR, NON_AUT;
 
-
 RELATIONSHIP escribir :
     autor GO libro : ONE_TO_MANY;
 

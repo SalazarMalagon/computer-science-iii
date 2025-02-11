@@ -9,14 +9,17 @@ class Token:
         return f"Token({self.type_}, {self.value})"
 
 TOKEN_TYPES = [
-    ('KEYWORD', r'\b(ENTITY|RELATIONSHIP|GO|ONE_TO_MANY)\b'),
-    ('PROPERTY', r'\b(PK|NON_NULL|INT|AUT|NON_PK|CHAR|NON_AUT)\b'),
-    ('IDENTIFIER', r'\b[a-z_]+\b'),
-    ('SEPARATOR', r':|,'),
-    ('TERMINATOR', r';'),
+    ('KEYWORD', r'\b(ENTITY|RELATIONSHIP|GO)\b'),
+    ('CARDINALITY', r'\b(ONE_TO_ONE|ONE_TO_MANY|MANY_TO_MANY)\b'),
+    ('PROPERTY', r'\b(PK|NON_PK|NON_NULL|INT|CHAR|AUT|NON_AUT)\b'),
+    ('IDENTIFIER', r'\b[a-zA-Z_][a-zA-Z0-9_]*\b'),
+    ('TERMINATOR', r':'),
+    ('SEPARATOR', r','),
+    ('SEMITERMINATOR', r';'),
     ('COMMENT', r'//.*'),
-    ('SKIP', r'[ \t\n]+'),
-    ('MISMATCH', r'.')  # Caracter no reconocido
+    ('WHITESPACE', r'[ \t]+'),
+    ('NEWLINE', r'\n'),
+    ('MISMATCH', r'.')
 ]
 
 
@@ -31,6 +34,10 @@ def checker (code: str):
             raise RuntimeError(f"Unexpected character: {value}")
         if kind == "SKIP":
             # ignores spaces and tabs
+            continue
+        if kind == "NEWLINE":
+            continue
+        if kind == "WHITESPACE":
             continue
         # if all validations are fine, just add as a new token
         tokens.append(Token(kind, value))
