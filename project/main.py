@@ -1,24 +1,22 @@
 from Lexcal import checker
-
-def lexical_analysis(code: str):
-    tokens = checker(code)
-    # code = remove_comments(code)
-    # code = remove_spaces(code)
-    # code = remove_punctuation(code)
-    return tokens
-
+from sintactic import SintacticAnalyzer
+#from semantic import SemanticAnalyzer
 
 if __name__ == '__main__':
     code = """
 
 ENTITY libro :
-    codigo: PK, NON_NULL, INT, AUT
-    autor: NON_PK, NON_NULL, CHAR, NON_AUT
+    codigo: PK, NON_NULL, INT, AUT;
+    autor: NON_PK, NON_NULL, CHAR, NON_AUT;
 
 
 RELATIONSHIP escribir :
-    autor GO libro : ONE_TO_MANY
+    autor GO libro : ONE_TO_MANY;
 
 """
-    new_code = lexical_analysis(code)
+    new_code = checker(code)
     print(new_code)
+    sintactic_analyzer = SintacticAnalyzer(new_code)
+    sintactic_analyzer.parse()
+    print(sintactic_analyzer)
+    #semantic_analyzer = SemanticAnalyzer(new_code)

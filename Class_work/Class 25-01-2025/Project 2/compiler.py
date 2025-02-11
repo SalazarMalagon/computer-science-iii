@@ -19,6 +19,7 @@ class Compiler:
         tokens_ = LexicalAnalyzer.lex(code)
         sintactic_analyzer = SintacticAnalyzer(tokens_)
         sintactic_analyzer.parse()
+        print(sintactic_analyzer)
         semantic_analyzer_ = SemanticAnalyzer(tokens_)
         notes = semantic_analyzer_.analyze()
         self.draw_pentagram(notes)
@@ -36,7 +37,7 @@ class Compiler:
 
         # Draw the G clef image
         current_dir = os.getcwd()
-        g_clef_image_path = os.path.join(current_dir, "img/g_clef.png")
+        g_clef_image_path = os.path.join(current_dir, "img\g_clef.png")
         g_clef_image = tk.PhotoImage(file=g_clef_image_path)
         canvas.create_image(10, 75, anchor=tk.NW, image=g_clef_image)
 
