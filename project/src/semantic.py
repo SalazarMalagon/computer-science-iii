@@ -26,25 +26,41 @@ class SemanticAnalyzer:
             i += 1
 
     def _process_entity(self, start_index):
+        """Procesa una definición de entidad."""
         entity_name = self.tokens[start_index].value
+        if entity_name in self.entities:
+            self._add_error(f"Entidad duplicada: '{entity_name}'", start_index)
+        
         self.entities[entity_name] = []
         i = start_index + 2  # Saltar ':' después del nombre
         
-        while i < len(self.tokens) and self.tokens[i].value != ";":
-            if self.tokens[i].type_ == "IDENTIFIER":
-                attr = {
-                    'name': self.tokens[i].value,
-                    'properties': []
-                }
-                j = i + 2  # Saltar ':' después del nombre del atributo
-                while j < len(self.tokens) and self.tokens[j].value not in (';', 'IDENTIFIER'):
-                    if self.tokens[j].type_ == "PROPERTY":
-                        attr['properties'].append(self.tokens[j].value)
-                    j += 1
-                self.entities[entity_name].append(attr)
-                i = j
-            else:
+        while i < len(self.tokens):
+            # Saltar comas, puntos y comas vacíos
+            if self.tokens[i].type_ in ("SEPARATOR", "SEMITERMINATOR"):
                 i += 1
+                continue
+            
+            # Fin de la definición de la entidad
+            if self.tokens[i].type_ not in ("IDENTIFIER", "PROPERTY"):
+                break
+            
+            # Procesar un atributo
+            if self.tokens[i].type_ == "IDENTIFIER":
+                attr_name = self.tokens[i].value
+                i += 2  # Saltar ':' después del nombre del atributo
+                
+                properties = []
+                while i < len(self.tokens) and self.tokens[i].type_ in ("PROPERTY", "SEPARATOR"):
+                    if self.tokens[i].type_ == "PROPERTY":
+                        properties.append(self.tokens[i].value)
+                    i += 1
+                
+                # Validar y guardar el atributo
+                self._validate_attribute(attr_name, entity_name, i)
+                self.entities[entity_name].append({
+                    "name": attr_name,
+                    "properties": properties
+                })
 
     def _validate_attribute(self, attr_name, entity_name, pos):
         """Valida que el atributo no esté duplicado."""
