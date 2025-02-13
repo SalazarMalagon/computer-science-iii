@@ -18,29 +18,31 @@ class Compiler:
         
         # Análisis semántico
         semantic_analyzer = SemanticAnalyzer(tokens)
-        semantic_structure = semantic_analyzer.analyze()
+        semantic_errors = semantic_analyzer.analyze()
         
-        if semantic_structure:
+        if semantic_errors:
             print("Errores semánticos:")
-            for error in semantic_structure:
+            for error in semantic_errors:
                 print(f"- {error}")
             return
         else:
             print("\nAnálisis semántico exitoso!")
-
+            semantic_data = {
+                'entities': semantic_analyzer.entities,
+                'relationships': semantic_analyzer.relationships
+            }
+    # Generación de código SQL
 
         # Generación de código SQL
-        # code_gen = CodeGenerator()
-        # sql_code = code_gen.generate_sql(semantic_structure)
+        code_gen = CodeGenerator()
+        sql_code = code_gen.generate_sql(semantic_data)
         
-        # # Guardar en archivo
-        # current_dir = os.path.dirname(os.path.abspath(__file__))
-        # project_root = os.path.dirname(current_dir)
-        # sql_folder = os.path.join(project_root, "SQL")
-        # output_file = os.path.join(sql_folder, "output.sql")
-        # with open(output_file, "w", encoding="utf-8") as f:
-        #     f.write(sql_code)
+        # Guardar en archivo
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.dirname(current_dir)
+        sql_folder = os.path.join(project_root, "SQL")
+        output_file = os.path.join(sql_folder, "output.sql")
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(sql_code)
 
-        # print(f"Archivo guardado en: {output_file}")
-
-        
+        print(f"Archivo guardado en: {output_file}")

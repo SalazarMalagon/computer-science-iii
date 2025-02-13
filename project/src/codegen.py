@@ -1,75 +1,54 @@
 class CodeGenerator:
-    def generate_sql(self, semantic_structure: dict) -> str:
-        """Genera el código SQL (DDL) a partir de la estructura semántica.
-
-        Args:
-            semantic_structure (dict): Representación semántica con claves 'entities' y 'relationships'.
-
-        Returns:
-            str: Código SQL completo.
-        """
-        sql_lines = []
-        entities = semantic_structure.get("entities", {})
-        relationships = semantic_structure.get("relationships", {})
+    def generate_sql(self, semantic_data):
+        sql_code = []
+        entities = semantic_data.get('entities', {})
+        relationships = semantic_data.get('relationships', [])
 
         # Generar CREATE TABLE para cada entidad
-        for entity_name, info in entities.items():
+        for entity_name, attributes in entities.items():
             columns = []
-            for attr in info["attributes"]:
-                col_def = self._build_column_definition(attr, info["properties"][attr])
-                columns.append(col_def)
+            primary_keys = []
+            for attr in attributes:
+                # Determinar tipo de dato y propiedades
+                data_type = "INT" if "INT" in attr['properties'] else "VARCHAR(255)"
+                constraints = []
+                if "PK" in attr['properties']:
+                    primary_keys.append(attr['name'])
+                if "NON_NULL" in attr['properties']:
+                    constraints.append("NOT NULL")
+                if "AUT" in attr['properties'] and data_type == "INT":
+                    constraints.append("AUTO_INCREMENT")
+                
+                column_def = f"{attr['name']} {data_type} {' '.join(constraints)}".strip()
+                columns.append(column_def)
             
-            # Añadir PRIMARY KEY
-            pk_attr = self._find_primary_key(info["properties"])
-            if pk_attr:
-                columns.append(f"PRIMARY KEY ({pk_attr})")
+            # Agregar clausula PRIMARY KEY
+            if primary_keys:
+                pk_clause = f"PRIMARY KEY ({', '.join(primary_keys)})"
+                columns.append(pk_clause)
             
             create_table = f"CREATE TABLE {entity_name} (\n    " + ",\n    ".join(columns) + "\n);"
-            sql_lines.append(create_table)
+            sql_code.append(create_table)
 
-        # Generar claves foráneas para relaciones
-        for rel_name, rel_info in relationships.items():
-            origin = rel_info["origin"]
-            destination = rel_info["destination"]
-            pk_origin = self._find_primary_key(entities[origin]["properties"])
+        # Generar FOREIGN KEYS basados en relaciones
+        for rel in relationships:
+            entity1, entity2 = rel['entities']
+            cardinality = rel['cardinality']
             
-            if pk_origin:
-                fk_statement = (
-                    f"ALTER TABLE {destination} "
-                    f"ADD COLUMN {origin}_id INT NOT NULL, "
-                    f"ADD FOREIGN KEY ({origin}_id) REFERENCES {origin}({pk_origin});"
+            # ONE_TO_MANY: FK en la entidad "many"
+            if cardinality == "ONE_TO_MANY":
+                # Buscar PK de la entidad "one" (entity1)
+                pk_entity1 = next(attr['name'] for attr in entities[entity1] if "PK" in attr['properties'])
+                fk_column = f"{entity1}_{pk_entity1}"
+                
+                # Agregar columna FK si no existe
+                if not any(attr['name'] == fk_column for attr in entities[entity2]):
+                    sql_code.append(f"ALTER TABLE {entity2} ADD COLUMN {fk_column} INT;")
+                
+                # Agregar FOREIGN KEY constraint
+                sql_code.append(
+                    f"ALTER TABLE {entity2} ADD FOREIGN KEY ({fk_column}) "
+                    f"REFERENCES {entity1}({pk_entity1});"
                 )
-                sql_lines.append(fk_statement)
 
-        return "\n\n".join(sql_lines)
-
-    def _build_column_definition(self, attr_name: str, properties: list) -> str:
-        """Construye la definición de una columna SQL."""
-        type_map = {
-            "INT": "INT",
-            "CHAR": "VARCHAR(255)"
-        }
-        
-        constraints = []
-        col_parts = [attr_name]
-        
-        # Determinar tipo de dato
-        for prop in properties:
-            if prop in type_map:
-                col_parts.append(type_map[prop])
-        
-        # Añadir constraints
-        if "NON_NULL" in properties:
-            constraints.append("NOT NULL")
-        if "AUT" in properties:
-            constraints.append("AUTO_INCREMENT")
-        
-        # Combinar todo
-        return " ".join(col_parts + constraints)
-
-    def _find_primary_key(self, properties: dict) -> str:
-        """Encuentra el atributo que es PRIMARY KEY."""
-        for attr, props in properties.items():
-            if "PK" in props:
-                return attr
-        return None
+        return "\n\n".join(sql_code)

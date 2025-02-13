@@ -9,6 +9,7 @@ ENTITY libro :
 ENTITY autor :
     id: PK, NON_NULL, INT, NON_AUT;
     nombre: NON_PK, NON_NULL, CHAR, NON_AUT;
+    nombre: NON_PK, NON_NULL, CHAR, NON_AUT;
 
 RELATIONSHIP escribir :
     autor GO libro : ONE_TO_MANY;

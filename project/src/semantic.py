@@ -26,20 +26,23 @@ class SemanticAnalyzer:
             i += 1
 
     def _process_entity(self, start_index):
-        """Procesa una definición de entidad."""
         entity_name = self.tokens[start_index].value
-        if entity_name in self.entities:
-            self._add_error(f"Entidad duplicada: '{entity_name}'", start_index)
-        
         self.entities[entity_name] = []
         i = start_index + 2  # Saltar ':' después del nombre
         
         while i < len(self.tokens) and self.tokens[i].value != ";":
             if self.tokens[i].type_ == "IDENTIFIER":
-                attr_name = self.tokens[i].value
-                self._validate_attribute(attr_name, entity_name, i)
-                self.entities[entity_name].append(attr_name)
-                i = self._skip_attribute_properties(i + 2)  # Saltar ':' después del atributo
+                attr = {
+                    'name': self.tokens[i].value,
+                    'properties': []
+                }
+                j = i + 2  # Saltar ':' después del nombre del atributo
+                while j < len(self.tokens) and self.tokens[j].value not in (';', 'IDENTIFIER'):
+                    if self.tokens[j].type_ == "PROPERTY":
+                        attr['properties'].append(self.tokens[j].value)
+                    j += 1
+                self.entities[entity_name].append(attr)
+                i = j
             else:
                 i += 1
 
@@ -64,16 +67,25 @@ class SemanticAnalyzer:
         rel_name = self.tokens[start_index].value
         i = start_index + 2  # Saltar ':' después del nombre
         
-        entity1 = self.tokens[i].value
+        entity1 = self.tokens[i].value  # Primera entidad
         i += 2  # Saltar 'GO'
-        entity2 = self.tokens[i].value
+        entity2 = self.tokens[i].value  # Segunda entidad
+        i += 2  # Saltar ':'
+        cardinality = self.tokens[i].value  # Cardinalidad
         
-        self.relationships.append((rel_name, entity1, entity2))
+        self.relationships.append({
+            'name': rel_name,
+            'entities': [entity1, entity2],
+            'cardinality': cardinality
+        })
 
     def _validate_relationships(self):
         """Valida que las entidades en relaciones existan."""
         for rel in self.relationships:
-            _, entity1, entity2 = rel
+            # Acceder a las entidades desde el diccionario de la relación
+            entity1 = rel['entities'][0]
+            entity2 = rel['entities'][1]
+            
             if entity1 not in self.entities:
                 self._add_error(f"Entidad no definida en relación: '{entity1}'")
             if entity2 not in self.entities:
