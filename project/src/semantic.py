@@ -11,7 +11,7 @@ class SemanticAnalyzer:
         """Realiza el análisis semántico y devuelve los errores encontrados."""
         self._collect_definitions()
         self._validate_relationships()
-        return None if not self.errors else self.errors
+        return self.errors
 
     def _collect_definitions(self):
         """Recopila entidades y relaciones del código."""
@@ -26,28 +26,20 @@ class SemanticAnalyzer:
             i += 1
 
     def _process_entity(self, start_index):
+        """Procesa una definición de entidad."""
         entity_name = self.tokens[start_index].value
         if entity_name in self.entities:
             self._add_error(f"Entidad duplicada: '{entity_name}'", start_index)
-            return
-
+        
         self.entities[entity_name] = []
-        i = start_index + 2  # Saltar ENTITY e IDENTIFIER
-
+        i = start_index + 2  # Saltar ':' después del nombre
+        
         while i < len(self.tokens) and self.tokens[i].value != ";":
             if self.tokens[i].type_ == "IDENTIFIER":
                 attr_name = self.tokens[i].value
-                if any(attr["name"] == attr_name for attr in self.entities[entity_name]):
-                    self._add_error(f"Atributo duplicado: '{attr_name}' en entidad '{entity_name}'", i)
-                i += 1  # Saltar IDENTIFIER
-                if i < len(self.tokens) and self.tokens[i].value == ":":
-                    i += 1  # Saltar :
-                    properties = []
-                    while i < len(self.tokens) and self.tokens[i].value not in (";", ","):
-                        if self.tokens[i].type_ == "PROPERTY":
-                            properties.append(self.tokens[i].value)
-                        i += 1
-                    self.entities[entity_name].append({"name": attr_name, "properties": properties})
+                self._validate_attribute(attr_name, entity_name, i)
+                self.entities[entity_name].append(attr_name)
+                i = self._skip_attribute_properties(i + 2)  # Saltar ':' después del atributo
             else:
                 i += 1
 

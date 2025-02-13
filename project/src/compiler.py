@@ -28,19 +28,19 @@ class Compiler:
         else:
             print("\nAnálisis semántico exitoso!")
 
-        '''
-        # Generación de código SQL
-        code_gen = CodeGenerator()
-        sql_code = code_gen.generate_sql(semantic_structure)
-        
-        # Guardar en archivo
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.dirname(current_dir)
-        sql_folder = os.path.join(project_root, "SQL")
-        output_file = os.path.join(sql_folder, "output.sql")
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(sql_code)
 
-        print(f"Archivo guardado en: {output_file}")'''
+        # Generación de código SQL
+        # code_gen = CodeGenerator()
+        # sql_code = code_gen.generate_sql(semantic_structure)
+        
+        # # Guardar en archivo
+        # current_dir = os.path.dirname(os.path.abspath(__file__))
+        # project_root = os.path.dirname(current_dir)
+        # sql_folder = os.path.join(project_root, "SQL")
+        # output_file = os.path.join(sql_folder, "output.sql")
+        # with open(output_file, "w", encoding="utf-8") as f:
+        #     f.write(sql_code)
+
+        # print(f"Archivo guardado en: {output_file}")
 
         
