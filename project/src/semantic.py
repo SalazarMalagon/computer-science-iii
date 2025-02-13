@@ -44,8 +44,9 @@ class SemanticAnalyzer:
                 i += 1
 
     def _validate_attribute(self, attr_name, entity_name, pos):
-        """Valida propiedades de un atributo."""
-        if attr_name in self.entities[entity_name]:
+        """Valida que el atributo no esté duplicado."""
+        existing_attrs = [attr["name"] for attr in self.entities[entity_name]]
+        if attr_name in existing_attrs:
             self._add_error(f"Atributo duplicado: '{attr_name}' en entidad '{entity_name}'", pos)
 
     def _skip_attribute_properties(self, start_index):
