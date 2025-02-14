@@ -41,6 +41,7 @@ class Compiler:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         project_root = os.path.dirname(current_dir)
         sql_folder = os.path.join(project_root, "SQL")
+        
         output_file = os.path.join(sql_folder, "output.sql")
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(sql_code)
