@@ -12,6 +12,7 @@ ENTITY autor :
 
 RELATIONSHIP escribir :
     autor GO libro : ONE_TO_MANY;
+
     """
     
     compiler = Compiler()

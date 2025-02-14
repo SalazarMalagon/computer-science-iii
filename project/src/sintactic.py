@@ -98,10 +98,22 @@ class SintacticAnalyzer:
         <ATTRIBUTE_PROPERTIES> -> <PROPERTY> | <PROPERTY> "," <ATTRIBUTE_PROPERTIES>
         Se procesa al menos una propiedad. Si hay coma, se esperan más propiedades.
         """
+        properties = []
+
+        properties.append(self.current_token.value)
         self.match("PROPERTY")
         while self.current_token is not None and self.current_token.type_ == "SEPARATOR":
             self.match("SEPARATOR", ",")
+            properties.append(self.current_token.value)
             self.match("PROPERTY")
+
+        if len(properties) != 4:
+            line = self.current_token.line if self.current_token else "desconocida"
+            column = self.current_token.column if self.current_token else "desconocida"
+            raise SyntaxError(
+                f"Error sintáctico en línea {line}, columna {column}: "
+                f"Un atributo debe tener exactamente 4 propiedades, pero tiene {len(properties)}."
+            )
 
     def parse_relationship_definition(self):
         """

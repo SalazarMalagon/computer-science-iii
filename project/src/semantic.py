@@ -33,6 +33,8 @@ class SemanticAnalyzer:
         
         self.entities[entity_name] = []
         i = start_index + 2  # Saltar ':' después del nombre
+
+        attributes = {}
         
         while i < len(self.tokens):
             # Saltar comas, puntos y comas vacíos
@@ -57,16 +59,31 @@ class SemanticAnalyzer:
                 
                 # Validar y guardar el atributo
                 self._validate_attribute(attr_name, entity_name, i)
+                attributes[attr_name] = properties
+                self._validate_attribute_properties(entity_name, properties)
                 self.entities[entity_name].append({
                     "name": attr_name,
                     "properties": properties
                 })
+        self._validate_attribute_properties(entity_name, attributes)
 
     def _validate_attribute(self, attr_name, entity_name, pos):
         """Valida que el atributo no esté duplicado."""
         existing_attrs = [attr["name"] for attr in self.entities[entity_name]]
         if attr_name in existing_attrs:
             self._add_error(f"Atributo duplicado: '{attr_name}' en entidad '{entity_name}'", pos)
+
+    def _validate_attribute_properties(self, entity, attributes):
+
+        if "PK" in attributes and "NON_PK" in attributes:
+            print(f"Error en {entity}: PK y NON_PK no pueden coexistir")
+
+        if "NULL" in attributes and "NON_NULL" in attributes:
+            print(f"Error en {entity}: NULL y NON_NULL no pueden coexistir.")
+    
+        if "AUT" in attributes and "NON_AUT" in attributes:
+            print(f"Error en {entity}: AUT y NON_AUT no pueden coexistir.")
+
 
     def _skip_attribute_properties(self, start_index):
         """Avanza hasta el final de las propiedades de un atributo."""
