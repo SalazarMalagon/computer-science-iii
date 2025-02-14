@@ -1,8 +1,5 @@
 import os
 import shutil
-import tkinter as tk
-from tkinter import ttk
-
 
 from Lexcal import checker
 from sintactic import SintacticAnalyzer
@@ -64,16 +61,5 @@ class Compiler:
 
 
         # Parsear y generar diagrama
-
-        """Función principal que inicializa Tkinter y muestra el gráfico."""
-        """root = tk.Tk()
-        root.title("Diagrama Relacional")
-
-        ttk.Label(root, text="Diagrama Relacional Generado", font=("Arial", 14)).pack(pady=10)
-
         tables = diaggen.parse_sql_file(output_file)
-        G = diaggen.draw_schema(tables)
-
-        diaggen.plot_graph(G, root)
-
-        root.mainloop()"""
+        diaggen.graficar_diagrama(tables, zoom_factor=0.8)
