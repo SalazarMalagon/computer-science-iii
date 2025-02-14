@@ -25,7 +25,7 @@ El compilador sigue las siguientes fases:
 
 ## Diagrama Generativo
 
-```plaintext
+```
 <S>                       -> <ENTITY_DEFINITION> | <RELATIONSHIP_DEFINITION>
 <ENTITY_DEFINITION>       -> "ENTITY" <IDENTIFIER> ":" <ATTRIBUTE_LIST>
 <ATTRIBUTE_LIST>          -> <ATTRIBUTE> ";" | <ATTRIBUTE> ";" <ATTRIBUTE_LIST>
@@ -39,7 +39,7 @@ El compilador sigue las siguientes fases:
 
 ### Ejemplo de Entrada
 
-```plaintext
+```
 ENTITY libro :
     codigo: PK, NON_NULL, INT, AUT;
     autor: NON_PK, NON_NULL, CHAR, NON_AUT;
@@ -55,61 +55,78 @@ RELATIONSHIP escribir :
 ### Salida Generada
 
 1. **Archivo SQL**: Se genera un archivo `output.sql` con la estructura de la base de datos.
-2. **Diagrama E-R**: Se genera un representación gráfica (simple) con matplotlib y networkx de la base de datos.
+2. **Diagrama E-R**: Se genera una representación gráfica (simple) de la base de datos con matplotlib y networkx.
 
 ## Instalación
 
-1. Clonar el repositorio:
-   ```sh
-   git clone https://github.com/SalazarMalagon/computer-science-iii.git
-   cd project
-   ```
-2. Crear y activar un entorno virtual (opcional pero recomendado):
-   ```sh
-   python -m venv venv
-   source venv/bin/activate  # En Linux/macOS
-   venv\Scripts\activate     # En Windows
-   ```
-3. Instalar dependencias:
-   ```sh
-   pip install -r requirements.txt
-   ```
+### Clonar el repositorio
+```sh
+ git clone https://github.com/SalazarMalagon/computer-science-iii.git
+ cd project
+```
+
+### Crear y activar un entorno virtual (opcional pero recomendado)
+```sh
+# En Linux/macOS
+python -m venv venv
+source venv/bin/activate
+
+# En Windows
+python -m venv venv
+venv\Scripts\activate
+```
+
+### Instalar dependencias
+```sh
+pip install -r requirements.txt
+```
 
 ## Uso
 
-en el archivo **main.py**, en la variable **code**, debes escribir tu base de datos a crear siguiendo las reglas propuestas por el proyecto, como lo expuesto en el diagrama generativo y teneiendo en cuenta el siguiente listado de tokens:
+En el archivo **main.py**, en la variable **code**, debes escribir la base de datos que deseas crear siguiendo las reglas del diagrama generativo.
 
-  ```plaintext
-  TOKEN_TYPES = [
-      ('KEYWORD', r'\b(ENTITY|RELATIONSHIP|GO)\b'),
-      ('CARDINALITY', r'\b(ONE_TO_ONE|ONE_TO_MANY|MANY_TO_MANY)\b'),
-      ('PROPERTY', r'\b(PK|NON_PK|NON_NULL|NULL|INT|CHAR|AUT|NON_AUT)\b'),
-      ('IDENTIFIER', r'\b[a-zA-Z_][a-zA-Z0-9_]*\b'),
-      ('TERMINATOR', r':'),
-      ('SEPARATOR', r','),
-      ('SEMITERMINATOR', r';'),
-      ('COMMENT', r'//.*'),
-      ('WHITESPACE', r'[ \t]+'),
-      ('NEWLINE', r'\n'),
-      ('MISMATCH', r'.')
-  ]
-  ```
+### Tokens Reconocidos
 
-Para ejecutar el compilador:
-  ```sh
-  python src/main.py
-  ```
+El compilador reconoce los siguientes tipos de tokens:
+- **Palabras clave**: ENTITY, RELATIONSHIP, GO.
+- **Cardinalidades**: ONE_TO_ONE, ONE_TO_MANY, MANY_TO_MANY.
+- **Propiedades de los atributos**(se deben poner las 4 propiedades sin ser contradictorios, no puede se PK y NON_PK al tiempo): PK, NON_PK, NON_NULL, NULL, INT, CHAR, AUT, NON_AUT.
+- **Identificadores**: Nombres de entidades, relaciones y atributos.
+- **Símbolos especiales**: Dos puntos `:` para definir atributos, punto y coma `;` como terminador, coma `,` para separar propiedades.
+- **Comentarios**: Se permiten comentarios con `//`.
+
+#### Ejemplo de Reconocimiento de Tokens
+Para la siguiente línea de código:
+```
+codigo: PK, NON_NULL, INT, AUT;
+```
+El analizador léxico generará:
+```
+IDENTIFIER: codigo
+TERMINATOR: :
+PROPERTY: PK
+SEPARATOR: ,
+PROPERTY: NON_NULL
+SEPARATOR: ,
+PROPERTY: INT
+SEPARATOR: ,
+PROPERTY: AUT
+SEMITERMINATOR: ;
+```
+
+### Ejecutar el Compilador
+```sh
+python src/main.py
+```
 
 ## Requisitos
 
-El compilador genera una imagen y un archivo SQL como salida utilizando **so,  matplotlib y networkx**, por lo que debes asegurarte de que esté instalado en tu sistema:
+El compilador genera una imagen y un archivo SQL como salida utilizando **matplotlib y networkx**, por lo que debes asegurarte de que estén instalados en tu sistema:
+```sh
+pip install matplotlib networkx
+```
+O instalar todas las dependencias de una vez con:
+```sh
+pip install -r requirements.txt
+```
 
-  ```sh
-  pip install so matplotlib networkx
-  ```
-O puedes ejecutar:
-
-   Instalar dependencias:
-   ```sh
-   pip install -r requirements.txt
-   ```
