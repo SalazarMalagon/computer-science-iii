@@ -33,7 +33,6 @@ class Compiler:
                 'entities': semantic_analyzer.entities,
                 'relationships': semantic_analyzer.relationships
             }
-    # Generación de código SQL
 
         # Generación de código SQL
         code_gen = CodeGenerator()
