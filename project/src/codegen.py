@@ -4,12 +4,12 @@ class CodeGenerator:
         entities = semantic_data.get('entities', {})
         relationships = semantic_data.get('relationships', [])
 
-        # Generar CREATE TABLE para cada entidad
+        # Generate CREATE TABLE for each entity
         for entity_name, attributes in entities.items():
             columns = []
             primary_keys = []
             for attr in attributes:
-                # Determinar tipo de dato y propiedades
+                # Determine data type and properties
                 data_type = "INT" if "INT" in attr['properties'] else "VARCHAR(255)"
                 constraints = []
                 if "PK" in attr['properties']:
@@ -22,7 +22,7 @@ class CodeGenerator:
                 column_def = f"{attr['name']} {data_type} {' '.join(constraints)}".strip()
                 columns.append(column_def)
             
-            # Agregar clausula PRIMARY KEY
+            # Add PRIMARY KEY clause
             if primary_keys:
                 pk_clause = f"PRIMARY KEY ({', '.join(primary_keys)})"
                 columns.append(pk_clause)
@@ -30,22 +30,22 @@ class CodeGenerator:
             create_table = f"CREATE TABLE {entity_name} (\n    " + ",\n    ".join(columns) + "\n);"
             sql_code.append(create_table)
 
-        # Generar FOREIGN KEYS basados en relaciones
+        # Generate FOREIGN KEYS based on relationships
         for rel in relationships:
             entity1, entity2 = rel['entities']
             cardinality = rel['cardinality']
             
-            # ONE_TO_MANY: FK en la entidad "many"
+            # ONE_TO_MANY: FK in the "many" entity
             if cardinality == "ONE_TO_MANY":
-                # Buscar PK de la entidad "one" (entity1)
+                # Find PK of the "one" entity (entity1)
                 pk_entity1 = next(attr['name'] for attr in entities[entity1] if "PK" in attr['properties'])
                 fk_column = f"{entity1}_{pk_entity1}"
                 
-                # Agregar columna FK si no existe
+                # Add FK column if it does not exist
                 if not any(attr['name'] == fk_column for attr in entities[entity2]):
                     sql_code.append(f"ALTER TABLE {entity2} ADD COLUMN {fk_column} INT;")
                 
-                # Agregar FOREIGN KEY constraint
+                # Add FOREIGN KEY constraint
                 sql_code.append(
                     f"ALTER TABLE {entity2} ADD FOREIGN KEY ({fk_column}) "
                     f"REFERENCES {entity1}({pk_entity1});"

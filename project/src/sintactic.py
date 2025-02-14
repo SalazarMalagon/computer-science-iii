@@ -11,7 +11,7 @@
 # <RELATION_DETAILS>        -> <IDENTIFIER> "GO" <IDENTIFIER> ":" <CARDINALITY> ";"
 # <CARDINALITY>             -> "ONE_TO_ONE" | "ONE_TO_MANY" | "MANY_TO_MANY"
 class SintacticAnalyzer:
-    """Analizador sintáctico para el lenguaje de definición de entidades y relaciones."""
+    """Syntactic parser for the entity and relationship definition language."""
 
     def __init__(self, tokens):
         self.tokens = tokens
@@ -20,7 +20,7 @@ class SintacticAnalyzer:
         self.advance()
 
     def advance(self):
-        """Avanza al siguiente token."""
+        """Move on to the next token."""
         self.pos += 1
         if self.pos < len(self.tokens):
             self.current_token = self.tokens[self.pos]
@@ -31,25 +31,25 @@ class SintacticAnalyzer:
         line = self.current_token.line if self.current_token else "desconocida"
         column = self.current_token.column if self.current_token else "desconocida"
         raise SyntaxError(
-            f"Error sintáctico en línea {line}, columna {column}: "
-            f"Se esperaba {expected}, pero se encontró '{self.current_token.value}'"
+            f"Syntactic error on line {line}, column {column}: "
+            f"It was expected {expected}, but was found '{self.current_token.value}'"
         )
 
     def match(self, token_type, value=None):
-        """Verifica que el token actual sea del tipo (y valor) esperado y avanza."""
+        """Verify that the current token is of the expected type (and value) and move on."""
         if self.current_token is None:
             self.error(f"{token_type} {value if value else ''}")
         if self.current_token.type_ != token_type:
             self.error(token_type)
         if value is not None and self.current_token.value != value:
-            self.error(f"{token_type} con valor {value}")
+            self.error(f"{token_type} with value {value}")
         self.advance()
 
     def parse(self):
         """
-        Método principal de análisis.
+        Main method of analysis.
         <S> -> <ENTITY_DEFINITION> | <RELATIONSHIP_DEFINITION>
-        Se espera que el código contenga una o más definiciones.
+        The code is expected to contain one or more definitions.
         """
         while self.current_token is not None:
             if self.current_token.type_ == "KEYWORD":
@@ -61,7 +61,7 @@ class SintacticAnalyzer:
                     self.error("ENTITY o RELATIONSHIP")
             else:
                 self.error("KEYWORD")
-        print("Análisis sintáctico completado exitosamente.")
+        print("Syntactic analysis completed successfully.")
 
     def parse_entity_definition(self):
         """
@@ -75,12 +75,11 @@ class SintacticAnalyzer:
     def parse_attribute_list(self):
         """
         <ATTRIBUTE_LIST> -> <ATTRIBUTE> ";" | <ATTRIBUTE> ";" <ATTRIBUTE_LIST>
-        Se procesa al menos un atributo, seguido de ';'. Si después hay otro identificador,
-        se continúa la lista.
+        At least one attribute is processed, followed by ';'. If another identifier follows, the list is continued.
         """
         self.parse_attribute()
         self.match("SEMITERMINATOR", ";")
-        # Mientras el siguiente token sea un identificador, asumimos que hay otro atributo
+        # As long as the next token is an identifier, we assume there is another attribute
         while self.current_token is not None and self.current_token.type_ == "IDENTIFIER":
             self.parse_attribute()
             self.match("SEMITERMINATOR", ";")
@@ -96,7 +95,7 @@ class SintacticAnalyzer:
     def parse_attribute_properties(self):
         """
         <ATTRIBUTE_PROPERTIES> -> <PROPERTY> | <PROPERTY> "," <ATTRIBUTE_PROPERTIES>
-        Se procesa al menos una propiedad. Si hay coma, se esperan más propiedades.
+        At least one property is processed. If there is a comma, more properties are expected.
         """
         properties = []
 
@@ -111,8 +110,8 @@ class SintacticAnalyzer:
             line = self.current_token.line if self.current_token else "desconocida"
             column = self.current_token.column if self.current_token else "desconocida"
             raise SyntaxError(
-                f"Error sintáctico en línea {line}, columna {column}: "
-                f"Un atributo debe tener exactamente 4 propiedades, pero tiene {len(properties)}."
+                f"Syntactic error on line {line}, column {column}: "
+                f"An attribute must have exactly 4 properties, but it has {len(properties)}."
             )
 
     def parse_relationship_definition(self):
