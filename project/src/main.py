@@ -50,45 +50,45 @@ if __name__ == "__main__":
     """
 
     code4 = """
-ENTITY usuario :
-    id: PK, NON_NULL, INT, AUT;
-    nombre: NON_PK, NON_NULL, CHAR, NON_AUT;
-    email: NON_PK, NON_NULL, CHAR, NON_AUT;
+    ENTITY usuario :
+        id: PK, NON_NULL, INT, AUT;
+        nombre: NON_PK, NON_NULL, CHAR, NON_AUT;
+        email: NON_PK, NON_NULL, CHAR, NON_AUT;
 
-ENTITY perfil :
-    id: PK, NON_NULL, INT, AUT;
-    descripcion: NON_PK, NON_NULL, CHAR, NON_AUT;
+    ENTITY perfil :
+        id: PK, NON_NULL, INT, AUT;
+        descripcion: NON_PK, NON_NULL, CHAR, NON_AUT;
 
-ENTITY publicacion :
-    id: PK, NON_NULL, INT, AUT;
-    contenido: NON_PK, NON_NULL, CHAR, NON_AUT;
-    fecha: NON_PK, NON_NULL, CHAR, NON_AUT;
+    ENTITY publicacion :
+        id: PK, NON_NULL, INT, AUT;
+        contenido: NON_PK, NON_NULL, CHAR, NON_AUT;
+        fecha: NON_PK, NON_NULL, CHAR, NON_AUT;
 
-ENTITY comentario :
-    id: PK, NON_NULL, INT, AUT;
-    texto: NON_PK, NON_NULL, CHAR, NON_AUT;
+    ENTITY comentario :
+        id: PK, NON_NULL, INT, AUT;
+        texto: NON_PK, NON_NULL, CHAR, NON_AUT;
 
-ENTITY reaccion :
-    id: PK, NON_NULL, INT, AUT;
-    tipo: NON_PK, NON_NULL, CHAR, NON_AUT;
+    ENTITY reaccion :
+        id: PK, NON_NULL, INT, AUT;
+        tipo: NON_PK, NON_NULL, CHAR, NON_AUT;
 
-RELATIONSHIP tiene :
-    usuario GO perfil : ONE_TO_ONE;
+    RELATIONSHIP tiene :
+        usuario GO perfil : ONE_TO_ONE;
 
-RELATIONSHIP escribe :
-    usuario GO publicacion : ONE_TO_MANY;
+    RELATIONSHIP escribe :
+        usuario GO publicacion : ONE_TO_MANY;
 
-RELATIONSHIP comenta :
-    usuario GO comentario : ONE_TO_MANY;
+    RELATIONSHIP comenta :
+        usuario GO comentario : ONE_TO_MANY;
 
-RELATIONSHIP reacciona :
-    usuario GO reaccion : MANY_TO_MANY;
+    RELATIONSHIP reacciona :
+        usuario GO reaccion : MANY_TO_MANY;
 
-RELATIONSHIP recibe :
-    publicacion GO comentario : ONE_TO_MANY;
+    RELATIONSHIP recibe :
+        publicacion GO comentario : ONE_TO_MANY;
 
-RELATIONSHIP se_aplica_a :
-    publicacion GO reaccion : ONE_TO_MANY;
+    RELATIONSHIP se_aplica_a :
+        publicacion GO reaccion : ONE_TO_MANY;
 """
     
     # Initialize the compiler instance
