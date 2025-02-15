@@ -1,5 +1,2 @@
-re
 networkx
 matplotlib
-os
-shutil

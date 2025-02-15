@@ -95,4 +95,4 @@ if __name__ == "__main__":
     compiler = Compiler()
     
     # Compile the entity-relationship model into an SQL script
-    compiler.compile(code4, "mi_base_de_datos.sql")
+    compiler.compile(code, "mi_base_de_datos.sql")
