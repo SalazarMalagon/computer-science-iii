@@ -19,6 +19,35 @@ if __name__ == "__main__":
         autor GO libro : ONE_TO_MANY;
 
     """
+
+    code2 = """
+    ENTITY estudiante :
+        id: PK, NON_NULL, INT, AUT;
+        nombre: NON_PK, NON_NULL, CHAR, NON_AUT;
+        edad: NON_PK, NON_NULL, INT, NON_AUT;
+
+    ENTITY curso :
+        codigo: PK, NON_NULL, INT, NON_AUT;
+        titulo: NON_PK, NON_NULL, CHAR, NON_AUT;
+
+    RELATIONSHIP inscripcion :
+        estudiante GO curso : MANY_TO_MANY;
+    """
+
+    code3 = """
+    ENTITY cliente :
+        id: PK, NON_NULL, INT, AUT;
+        nombre: NON_PK, NON_NULL, CHAR, NON_AUT;
+        email: NON_PK, NON_NULL, CHAR, NON_AUT;
+
+    ENTITY pedido :
+        numero: PK, NON_NULL, INT, AUT;
+        fecha: NON_PK, NON_NULL, CHAR, NON_AUT;
+        total: NON_PK, NON_NULL, INT, NON_AUT;
+
+    RELATIONSHIP realizar :
+        cliente GO pedido : ONE_TO_MANY;
+    """
     
     # Initialize the compiler instance
     compiler = Compiler()
