@@ -73,7 +73,7 @@ if __name__ == "__main__":
         tipo: NON_PK, NON_NULL, CHAR, NON_AUT;
 
     RELATIONSHIP tiene :
-        usuario GO perfil : ONE_TO_ONE;
+        usuario GO perfil : ONE_TO_MANY;
 
     RELATIONSHIP escribe :
         usuario GO publicacion : ONE_TO_MANY;
