@@ -50,5 +50,40 @@ class CodeGenerator:
                     f"ALTER TABLE {entity2} ADD FOREIGN KEY ({fk_column}) "
                     f"REFERENCES {entity1}({pk_entity1});"
                 )
+            if cardinality == "MANY_TO_MANY":
+                # Obtener los nombres de las claves primarias de ambas entidades
+                pk_entity1 = next(attr['name'] for attr in entities[entity1] if "PK" in attr['properties'])
+                pk_entity2 = next(attr['name'] for attr in entities[entity2] if "PK" in attr['properties'])
+
+                # Crear el nombre de la tabla intermedia (convención: entidad1_entidad2)
+                join_table = f"{entity1}_{entity2}"
+
+                # Crear la tabla intermedia con las claves foráneas
+                sql_code.append(f"CREATE TABLE {join_table} (")
+                sql_code.append(f"    {entity1}_{pk_entity1} INT NOT NULL,")
+                sql_code.append(f"    {entity2}_{pk_entity2} INT NOT NULL,")
+                sql_code.append(f"    PRIMARY KEY ({entity1}_{pk_entity1}, {entity2}_{pk_entity2}),")
+                sql_code.append(f"    FOREIGN KEY ({entity1}_{pk_entity1}) REFERENCES {entity1}({pk_entity1}),")
+                sql_code.append(f"    FOREIGN KEY ({entity2}_{pk_entity2}) REFERENCES {entity2}({pk_entity2})")
+                sql_code.append(f");")
+
+            if cardinality == "ONE_TO_ONE":
+                # Obtener las claves primarias de ambas entidades
+                pk_entity1 = next(attr['name'] for attr in entities[entity1] if "PK" in attr['properties'])
+                pk_entity2 = next(attr['name'] for attr in entities[entity2] if "PK" in attr['properties'])
+
+                # Decidir en qué entidad agregar la clave foránea (puede ser entity2 en este caso)
+                fk_column = f"{entity1}_{pk_entity1}"
+                
+                # Agregar la clave foránea en entity2 si no existe
+                if not any(attr['name'] == fk_column for attr in entities[entity2]):
+                    sql_code.append(f"ALTER TABLE {entity2} ADD COLUMN {fk_column} INT UNIQUE;")
+
+                # Agregar la restricción de clave foránea
+                sql_code.append(
+                    f"ALTER TABLE {entity2} ADD FOREIGN KEY ({fk_column}) "
+                    f"REFERENCES {entity1}({pk_entity1});"
+                )
+
 
         return "\n\n".join(sql_code)

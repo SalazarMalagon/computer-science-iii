@@ -31,7 +31,7 @@ if __name__ == "__main__":
         titulo: NON_PK, NON_NULL, CHAR, NON_AUT;
 
     RELATIONSHIP inscripcion :
-        estudiante GO curso : MANY_TO_MANY;
+        estudiante GO curso : ONE_TO_ONE;
     """
 
     code3 = """
@@ -53,4 +53,4 @@ if __name__ == "__main__":
     compiler = Compiler()
     
     # Compile the entity-relationship model into an SQL script
-    compiler.compile(code, "mi_base_de_datos.sql")
+    compiler.compile(code2, "mi_base_de_datos.sql")

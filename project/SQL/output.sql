@@ -1,15 +1,16 @@
-CREATE TABLE autor (
-    id INT NOT NULL,
+CREATE TABLE estudiante (
+    id INT NOT NULL AUTO_INCREMENT,
     nombre VARCHAR(255) NOT NULL,
+    edad INT NOT NULL,
     PRIMARY KEY (id)
 );
 
-CREATE TABLE libro (
-    codigo INT NOT NULL AUTO_INCREMENT,
-    autor VARCHAR(255) NOT NULL,
+CREATE TABLE curso (
+    codigo INT NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
     PRIMARY KEY (codigo)
 );
 
-ALTER TABLE libro ADD COLUMN autor_id INT;
+ALTER TABLE curso ADD COLUMN estudiante_id INT UNIQUE;
 
-ALTER TABLE libro ADD FOREIGN KEY (autor_id) REFERENCES autor(id);
+ALTER TABLE curso ADD FOREIGN KEY (estudiante_id) REFERENCES estudiante(id);
